@@ -435,40 +435,7 @@
       }
       function renderKey() {
         $("keyQuestions").innerHTML = "";
-        questions.forEach((q, i) => {
-          // Первый вопрос: кем посетитель приходится владельцу теста
-          const relationshipCard = document.createElement("div");
-          relationshipCard.className = "card";
-
-          const relationshipTitle = document.createElement("div");
-          relationshipTitle.className = "qtitle";
-          relationshipTitle.textContent = "1. Кто ты мне?";
-
-          relationshipCard.appendChild(relationshipTitle);
-
-          [
-            "Брат",
-            "Сестра",
-            "Друг",
-            "Подруга",
-            "Девушка",
-            "Парень",
-            "Другое",
-          ].forEach((value) => {
-            const label = document.createElement("label");
-            label.className = "option";
-
-            const input = document.createElement("input");
-            input.type = "radio";
-            input.name = "relationship";
-            input.value = value;
-            input.required = true;
-
-            label.append(input, document.createTextNode(value));
-            relationshipCard.appendChild(label);
-          });
-
-          box.appendChild(relationshipCard);
+        questions.forEach((q, i) => { 
           const div = document.createElement("div");
           div.className = "card";
           const title = document.createElement("div");
