@@ -52,6 +52,7 @@ app.use(session({
 app.use(express.static(path.join(__dirname, "public")));
 
 const questions = [
+  "Кем ты являешься для этого человека?",
   "Какой мой любимый цвет?",
   "Чем я больше всего люблю заниматься в свободное время?",
   "Какую музыку я чаще всего слушаю?",
@@ -64,6 +65,7 @@ const questions = [
   "Насколько хорошо ты думаешь, что знаешь меня?"
 ];
 const choices = [
+  ["Брат", "Сестра", "Друг", "Подруга", "Девушка", "Парень"],
   ["Чёрный", "Белый", "Синий", "Красный"],
   ["Играть", "Гулять", "Смотреть фильмы", "Слушать музыку"],
   ["Поп", "Рэп", "Рок", "Разную"],
@@ -77,30 +79,36 @@ const choices = [
 ];
 
 async function initDb() {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS users (
-      id BIGSERIAL PRIMARY KEY,
-      username VARCHAR(24) UNIQUE NOT NULL,
-      email VARCHAR(254) UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      notification_email VARCHAR(254),
-      created_at TIMESTAMPTZ DEFAULT NOW()
-    );
-    CREATE TABLE IF NOT EXISTS answer_keys (
-      user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-      answers JSONB NOT NULL,
-      updated_at TIMESTAMPTZ DEFAULT NOW()
-    );
-    CREATE TABLE IF NOT EXISTS submissions (
-      id BIGSERIAL PRIMARY KEY,
-      owner_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      sender_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      sender_username VARCHAR(24) NOT NULL,
-      answers JSONB NOT NULL,
-      score INTEGER NOT NULL,
-      created_at TIMESTAMPTZ DEFAULT NOW()
-    );
-  `);
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS users (
+            id BIGSERIAL PRIMARY KEY,
+            username VARCHAR(24) UNIQUE NOT NULL,
+            email VARCHAR(254) UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            notification_email VARCHAR(254),
+            created_at TIMESTAMPTZ DEFAULT NOW()
+        );
+
+        CREATE TABLE IF NOT EXISTS answer_keys (
+            user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+            answers JSONB NOT NULL,
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+        );
+
+        CREATE TABLE IF NOT EXISTS submissions (
+            id BIGSERIAL PRIMARY KEY,
+            owner_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            sender_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            sender_username VARCHAR(24) NOT NULL,
+            answers JSONB NOT NULL,
+            score INTEGER NOT NULL,
+            relationship VARCHAR(30),
+            created_at TIMESTAMPTZ DEFAULT NOW()
+        );
+
+        ALTER TABLE submissions
+        ADD COLUMN IF NOT EXISTS relationship VARCHAR(30);
+    `);
 }
 
 const authLimiter = rateLimit({ windowMs: 15 *  60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false });

@@ -9,8 +9,8 @@
     "dev": "node --watch server.js"
   },
   "engines": {
-    "node": ">=20"
-  },
+  "node": ">=20.0.0 <22.0.0"
+},
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "connect-pg-simple": "^10.0.0",
